@@ -3,8 +3,8 @@ module Enumerable
 
   def my_each_with_index
     index = 0
-    until index == size
-      yield(self[index], index)
+    for el in self do
+      yield(el, index)
       index += 1
     end
     self
@@ -12,41 +12,22 @@ module Enumerable
 
   def my_select
     matched_items = []
-    index = 0
-    until index == size
-      matched_items << self[index] if yield(self[index])
-      index += 1
-    end
+    my_each { |el| matched_items << el if yield(el) }
     matched_items
   end
 
   def my_all?
-    index = 0
-    until index == size
-      return false unless yield(self[index])
-
-      index += 1
-    end
+    my_each { |el| return false unless yield(el) }
     true
   end
 
   def my_any?
-    index = 0
-    until index == size
-      return true if yield(self[index])
-
-      index += 1
-    end
+    my_each { |el| return true if yield(el) }
     false
   end
 
   def my_none?
-    index = 0
-    until index == size
-      return false if yield(self[index])
-
-      index += 1
-    end
+    my_each { |el| return false if yield(el) }
     true
   end
 
@@ -54,34 +35,19 @@ module Enumerable
     return size unless block_given?
 
     count = 0
-    index = 0
-    until index == size
-      count += 1 if yield(self[index])
-
-      index += 1
-    end
+    my_each { |el| count += 1 if yield(el) }
     count
   end
 
   def my_map(&function)
-    new_arr = []
-    index = 0
-    until index == size
-      new_arr << function.call(self[index])
-
-      index += 1
-    end
-    new_arr
+    new_enum = []
+    my_each { |el| new_enum << function.call(el) }
+    new_enum
   end
 
   def my_inject(initializer, &function)
     accumulator = initializer
-    index = 0
-    until index == size
-      accumulator = function.call(accumulator, self[index])
-
-      index += 1
-    end
+    my_each { |el| accumulator = function.call(accumulator, el) }
     accumulator
   end
 end
@@ -93,10 +59,8 @@ end
 class Array
   # Define my_each here
   def my_each
-    index = 0
-    until index == size
-      yield(self[index])
-      index += 1
+    for el in self do
+      yield(el)
     end
     self
   end
